@@ -1,0 +1,52 @@
+@startuml
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+SHOW_PERSON_OUTLINE()
+
+title "Диаграмма контейнеров АСУ «Теплый дом»"
+
+Person(user, "User", "Пользователь системы")
+
+System_Boundary(acs, "АСУ «Теплый дом»") {
+
+	Container(ui, "UI АСУ Теплый дом", "TypeScript, React", "Интерфейс пользователя для управления системой")
+	Container(api_gateaway, "API Gateway", "Java, Spring Cloud Gateway", "Eдиная точка входа (entry point) для всех клиентских запросов")
+
+	Container(control_core, "Device Control Core", "Java, Spring MVC", "Получает данные от устройств и применяет логику управления")
+	Container(devicemgmt, "Device Management", "Java, Spring MVC", "Регистрация, мониторинг и управление устройствами")
+	Container(rbac, "User & Access Management", "Java, Spring MVC", "Регистрация, аутентификация пользователей и авторизация запросов")
+
+	ContainerDb(rbac_db, "User DB", "PostgresSQL", "Хранение пользователей, ролей и прав")
+	ContainerDb(devicemgmt_db, "Device Management DB", "PostgresSQL", "Хранение данных об устройствах и режимах работы")
+
+	Container(device_event_message_bus, "Device event Message Bus", "EMQX cluster with Bootstrap server", "Транспорт событий аппаратной части системы")
+
+	Container(container_event_message_bus, "Container Event Message Bus", "Kafka cluster with Bootstrap server", "Лог событий, взаимодействие контейнеров, хореография")
+
+	Rel(user, ui, "uses", "https")
+	Rel(ui, api_gateaway, "OpenApi", "sync, json, https")
+	Rel_Neighbor(api_gateaway, rbac, "OpenApi/auth", "sync, json/jwt, https")
+	Rel(api_gateaway, devicemgmt, "OpenApi", "sync, json, https")
+
+	Rel(control_core, devicemgmt_db, "socket", "sync, JDBC")
+	Rel(devicemgmt, devicemgmt_db, "socket", "sync, JDBC")
+	Rel(rbac, rbac_db, "socket", "sync, JDBC")
+
+	Rel(device_event_message_bus, devicemgmt, "управление", "ayncApi, MQTT")
+	Rel_Neighbor(control_core, container_event_message_bus, "хореография, логи", "kafka native protocol")
+	Rel_Neighbor(devicemgmt, container_event_message_bus, "хореография, логи", "kafka native protocol")
+	Rel_Neighbor(rbac, container_event_message_bus, "логи", "ayncApi, MQTT")
+
+}
+
+System_Ext(heater, "Система отопления", "Аппаратный контроллер системы отопления")
+System_Ext(sensor, "Датчик температуры", "Сообщает телеметрию в АСУ «Теплый дом»")
+
+Rel(sensor, device_event_message_bus, "телеметрия", "ayncApi, MQTT")
+Rel_Back(heater, device_event_message_bus, "управление", "ayncApi, MQTT")
+
+SHOW_LEGEND()
+
+
+@enduml
