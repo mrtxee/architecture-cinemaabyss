@@ -15,18 +15,13 @@ import java.time.Duration;
 
 public class SimpleProxy {
 
-  private static final String MOVIES_SERVICE = "http://127.0.0.1:8081";
-  private static final String USERS_SERVICE = "http://127.0.0.1:8080";
-  private static final String PROXY = "http://127.0.0.1:8000";
-
   private static final HttpClient httpClient = HttpClient.newBuilder()
       .connectTimeout(Duration.ofSeconds(10))
       .build();
 
   public static void main(String[] args) throws IOException {
-    // Создаем HTTP сервер на порту 8000
     HttpServer server = HttpServer.create(
-        new InetSocketAddress("127.0.0.1", 8000), 0
+        new InetSocketAddress("0.0.0.0", Configurator.PROXY_PORT), 0
     );
 
     // Обработчик для всех запросов
@@ -34,9 +29,9 @@ public class SimpleProxy {
 
     // Запускаем сервер
     server.start();
-    System.out.println("Proxy server started on " + PROXY);
-    System.out.println("Movies API -> " + MOVIES_SERVICE);
-    System.out.println("Users API  -> " + USERS_SERVICE);
+    System.out.println("Proxy server started on " + Configurator.PROXY_PORT);
+    System.out.println("Movies API -> " + Configurator.MOVIES_SERVICE_URL);
+    System.out.println("Users API  -> " + Configurator.MONOLITH_URL);
   }
 
   static class ProxyHandler implements HttpHandler {
@@ -52,18 +47,15 @@ public class SimpleProxy {
       try {
         String targetUrl;
 
-        // Определяем целевой сервис
         if (path.startsWith("/api/movies")) {
-          targetUrl = MOVIES_SERVICE + path + (query != null ? "?" + query : "");
-        } else if (path.startsWith("/api/users")) {
-          targetUrl = USERS_SERVICE + path + (query != null ? "?" + query : "");
+          targetUrl = Configurator.MOVIES_SERVICE_URL + path + (query != null ? "?" + query : "");
+        } else if (path.startsWith("/api/users") || path.startsWith("/health")) {
+          targetUrl = Configurator.MONOLITH_URL + path + (query != null ? "?" + query : "");
         } else {
-          // Для всех других путей возвращаем 404
-          sendError(exchange, 404, "Not Found inverse proxy route");
+          sendError(exchange, 404, "Not Found");
           return;
         }
 
-        // Проксируем запрос
         proxyRequest(exchange, targetUrl);
 
       } catch (Exception e) {
@@ -82,13 +74,6 @@ public class SimpleProxy {
                 exchange.getRequestMethod(),
                 HttpRequest.BodyPublishers.ofInputStream(() -> exchange.getRequestBody())
             );
-
-        // Копируем заголовки
-        exchange.getRequestHeaders().forEach((key, values) -> {
-          if (!key.equalsIgnoreCase("Host")) { // Не копируем Host header
-            values.forEach(value -> requestBuilder.header(key, value));
-          }
-        });
 
         // Выполняем запрос
         HttpResponse<InputStream> response = httpClient.send(

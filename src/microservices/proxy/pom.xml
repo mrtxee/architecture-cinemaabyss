@@ -26,18 +26,23 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.14.2</version>
+      <version>2.20.0</version>
     </dependency>
   </dependencies>
+
 
   <build>
     <plugins>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <version>3.1.0</version>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
         <configuration>
-          <mainClass>cinemaabyss.proxy.SimpleProxy</mainClass>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <mainClass>cinemaabyss.proxy.SimpleProxy</mainClass>
+            </manifest>
+          </archive>
         </configuration>
       </plugin>
     </plugins>

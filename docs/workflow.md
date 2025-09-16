@@ -8,6 +8,14 @@ docker-compose up -d
 ```
 
 # task-2 proxy
+## progress
+ + сделать приложение
+ + протестировать локально
+ + протестировать локально в докере
+ - протестировать докер-композ
+   - http://localhost:8080/api/users
+   - http://localhost:8080/health
+   - http://localhost:8080/api/movies
 
 # CinemaAabyssProxy
 http://127.0.0.1:8000   proxyServiceUrl
