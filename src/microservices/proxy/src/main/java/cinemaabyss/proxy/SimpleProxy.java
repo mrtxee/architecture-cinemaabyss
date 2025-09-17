@@ -75,6 +75,15 @@ public class SimpleProxy {
                 HttpRequest.BodyPublishers.ofInputStream(() -> exchange.getRequestBody())
             );
 
+        // Копируем заголовки
+        exchange.getRequestHeaders().forEach((key, values) -> {
+          System.out.println("header: " + key + " : " + values);
+          // fetch new Host header
+          if (!key.equalsIgnoreCase("Host") && !key.equalsIgnoreCase("Connection")) {
+            values.forEach(value -> requestBuilder.header(key, value));
+          }
+        });
+
         // Выполняем запрос
         HttpResponse<InputStream> response = httpClient.send(
             requestBuilder.build(),
