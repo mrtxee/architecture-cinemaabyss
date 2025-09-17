@@ -7,7 +7,8 @@ docker-compose up -d
 
 ```
 
-# task-2 proxy
+# task-21 proxy
+
 ## progress
  + сделать приложение
  + протестировать локально
@@ -17,7 +18,8 @@ docker-compose up -d
    - http://localhost:8080/health
    - http://localhost:8080/api/movies
 
-# CinemaAabyssProxy
+## CinemaAabyssProxy
+
 http://127.0.0.1:8000   proxyServiceUrl
 http://127.0.0.1:8080   baseUrl, monolith
 http://127.0.0.1:8081   moviesServiceUrl
@@ -36,6 +38,6 @@ http://127.0.0.1:8082   eventsServiceUrl
 пакет cinemaabyss.proxy
 проект CinemAabyss Proxy
 
-# todo
+## todo
 Реализуйте сервис на любом языке программирования в ./src/microservices/proxy.
 Конфигурация для запуска сервиса через docker-compose уже добавлена
