@@ -63,7 +63,9 @@
 
 Скрин выполнения `npm run test:local`
 
-![[Pasted image 20250917153121.png]]
+
+![Скрин тестов](attachments/20250917153121.png)
+
 
 Полный листинг `npm run test:local`
 
@@ -219,6 +221,12 @@ Failed requests: 0
 Total assertions: 42
 Failed assertions: 0
 ```
+
+Скрины состояния кафки
+
+![Скрин кафки-1](attachments/20250917202635.png)
+![Скрин кафки-2](attachments/img.png)
+
 # Задание 3
 
 Команда начала переезд в Kubernetes для лучшего масштабирования и повышения надежности. 

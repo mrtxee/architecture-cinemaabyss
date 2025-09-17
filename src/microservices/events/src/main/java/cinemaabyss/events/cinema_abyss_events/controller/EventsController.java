@@ -1,5 +1,7 @@
 package cinemaabyss.events.cinema_abyss_events.controller;
 
+import static cinemaabyss.events.cinema_abyss_events.service.kafka.KafkaConstant.MOVIE_TOPIC;
+import static cinemaabyss.events.cinema_abyss_events.service.kafka.KafkaConstant.PAYMENT_TOPIC;
 import static cinemaabyss.events.cinema_abyss_events.service.kafka.KafkaConstant.USER_TOPIC;
 
 import cinemaabyss.events.cinema_abyss_events.dto.HealthCheck;
@@ -44,6 +46,14 @@ public class EventsController {
   @PostMapping("payment")
   public ResponseEntity<PaymentResponse> sendKafkaPaymentEvent() {
     return new ResponseEntity<>(dataService.getPaymentResponse(), HttpStatus.CREATED);
+  }
+
+  @GetMapping("kafka")
+  public ResponseEntity<HealthCheck> kafka() {
+    kafkaSender.sendMessage("new", USER_TOPIC);
+    kafkaSender.sendMessage("new", MOVIE_TOPIC);
+    kafkaSender.sendMessage("new", PAYMENT_TOPIC);
+    return new ResponseEntity<>(new HealthCheck(true), HttpStatus.OK);
   }
 
 }
