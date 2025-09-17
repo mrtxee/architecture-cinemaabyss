@@ -12,6 +12,9 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class SimpleProxy {
 
@@ -78,7 +81,6 @@ public class SimpleProxy {
         // Копируем заголовки
         exchange.getRequestHeaders().forEach((key, values) -> {
           System.out.println("header: " + key + " : " + values);
-          // fetch new Host header
           if (!key.equalsIgnoreCase("Host") && !key.equalsIgnoreCase("Connection")) {
             values.forEach(value -> requestBuilder.header(key, value));
           }
@@ -90,8 +92,16 @@ public class SimpleProxy {
             HttpResponse.BodyHandlers.ofInputStream()
         );
 
+        // Получаем заголовки ответа и фильтруем конфликтующие
+        Map<String, List<String>> responseHeaders = new HashMap<>(response.headers().map());
+        System.out.println(responseHeaders);
+        responseHeaders.remove("content-length");
+        System.out.println(responseHeaders);
+
         // Копируем ответ клиенту
-        exchange.getResponseHeaders().putAll(response.headers().map());
+        System.out.println(exchange.getResponseHeaders());
+        exchange.getResponseHeaders().putAll(responseHeaders);
+        System.out.println(exchange.getResponseHeaders());
         exchange.sendResponseHeaders(response.statusCode(), 0);
 
         try (OutputStream os = exchange.getResponseBody();

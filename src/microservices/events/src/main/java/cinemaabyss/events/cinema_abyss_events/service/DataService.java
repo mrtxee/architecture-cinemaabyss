@@ -14,19 +14,19 @@ public class DataService {
 
   public UserResponse getUserResponse() {
     return new UserResponse(
-        getNum(), "username", "action", Instant.now()
+        getNum(), "username", "action", Instant.now(), "success"
     );
   }
 
   public MovieResponse getMovieResponse() {
     return new MovieResponse(
-        getNum(), "Test Movie Event", "viewed", getNum()
+        getNum(), "Test Movie Event", "viewed", getNum(), "success"
     );
   }
 
   public PaymentResponse getPaymentResponse() {
     return new PaymentResponse(
-        getNum(), getNum(), Float.valueOf(getNum()),  "completed", Instant.now(), "credit_card"
+        getNum(), getNum(), Float.valueOf(getNum()),  "success", Instant.now(), "credit_card"
     );
   }
 

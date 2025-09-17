@@ -9,6 +9,8 @@ import cinemaabyss.events.cinema_abyss_events.dto.UserResponse;
 import cinemaabyss.events.cinema_abyss_events.service.DataService;
 import cinemaabyss.events.cinema_abyss_events.service.kafka.KafkaSender;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,24 +26,24 @@ public class EventsController {
   private DataService dataService;
 
   @GetMapping("health")
-  public HealthCheck health() {
-    return new HealthCheck(true);
+  public ResponseEntity<HealthCheck> health() {
+    return new ResponseEntity<>(new HealthCheck(true), HttpStatus.OK);
   }
 
   @PostMapping("user")
-  public UserResponse sendKafkaUserEvent() {
+  public ResponseEntity<UserResponse> sendKafkaUserEvent() {
     kafkaSender.sendMessage("new", USER_TOPIC);
-    return dataService.getUserResponse();
+    return new ResponseEntity<>(dataService.getUserResponse(), HttpStatus.CREATED);
   }
 
   @PostMapping("movie")
-  public MovieResponse sendKafkaMovieEvent() {
-    return dataService.getMovieResponse();
+  public ResponseEntity<MovieResponse> sendKafkaMovieEvent() {
+    return new ResponseEntity<>(dataService.getMovieResponse(), HttpStatus.CREATED);
   }
 
   @PostMapping("payment")
-  public PaymentResponse sendKafkaPaymentEvent() {
-    return dataService.getPaymentResponse();
+  public ResponseEntity<PaymentResponse> sendKafkaPaymentEvent() {
+    return new ResponseEntity<>(dataService.getPaymentResponse(), HttpStatus.CREATED);
   }
 
 }
