@@ -300,7 +300,7 @@ jobs:
 {
         "auths": {
                 "ghcr.io": {
-                       тут пусто
+                       "тут" : "пусто"
                 }
         }
 }
@@ -521,6 +521,8 @@ minikube tunnel
 Потом вызовите 
 https://cinemaabyss.example.com/api/movies
 и приложите скриншот развертывания helm и вывода https://cinemaabyss.example.com/api/movies
+
+![helm cinemaabyss.example.com/api/movies](attachments/img_2.png)
 
 ## Удаляем все
 
