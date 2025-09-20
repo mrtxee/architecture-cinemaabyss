@@ -440,9 +440,13 @@ cat .docker/config.json | base64
   Часть тестов с health-чек упадет, но создание событий отработает.
   Откройте логи event-service и сделайте скриншот обработки событий
 
-#### Шаг 3
-Добавьте сюда скриншота вывода при вызове https://cinemaabyss.example.com/api/movies и  скриншот вывода event-service после вызова тестов.
+**скрины:**
+  ![postman k8s тесты](attachments/img_3.png)
 
+#### Шаг 3
+Добавьте сюда скриншота вывода при вызове https://cinemaabyss.example.com/api/movies и скриншот вывода event-service после вызова тестов.
+![cinemaabyss.example.com/api/movies](attachments/img_2.png)
+![логи event-service](attachments/img_1.png)
 
 # Задание 4
 Для простоты дальнейшего обновления и развертывания вам как архитектуру необходимо так же реализовать helm-чарты для прокси-сервиса и проверить работу 

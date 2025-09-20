@@ -3,7 +3,8 @@
 cd /c/h/a/f/software-architect-cource/labs/sprint-2/architecture-cinemaabyss
 
 # скачать образ из частной репы гитхаба
-docker pull ghcr.io/mrtxee/architecture-cinemaabyss/monolith
+docker pull ghcr.io/mrtxee/architecture-cinemaabyss/proxy-service
+docker pull ghcr.io/mrtxee/architecture-cinemaabyss/events-service
 # статус подов проекта
 kubectl -n cinemaabyss get pod
 # удалить лишний под
@@ -14,9 +15,11 @@ kubectl -n cinemaabyss describe pod events-service-5756fd6fb-lr8ph
 kubectl -n cinemaabyss rollout restart deployment/events-service
 # создать под из файла
 kubectl apply -f src/kubernetes/events-service.yaml
+kubectl apply -f src/kubernetes/ingress.yaml
 
 ## деплойменты управляет подсами !!
 ## репликасет - частный случай деплоймента !!
+## задать требуемое число репликасетов деплойента
 kubectl -n cinemaabyss get replicaset
 ### 1) в файле деплоймента 
 spec:
@@ -31,9 +34,9 @@ kubectl -n cinemaabyss delete replicaset events-service-67b57b756b
 kubectl -n cinemaabyss delete deployment events-service
 kubectl -n cinemaabyss delete deployment events-service proxy-service movies-service monolith
 kubectl -n cinemaabyss get pods,deploy,rs
-## задать требуемое число репликасетов деплойента
 
-
+# узнать адрес ПУ кубера
+kubectl cluster-info
 
 # пересоздать неймспейс
 kubectl delete namespace cinemaabyss
@@ -45,6 +48,28 @@ kubectl create namespace cinemaabyss
 
 # список доступов проекта
 kubectl -n cinemaabyss get secrets
+
+## настройка ингресса (внеший доступ к неймспейсу)
+### Установите официальный NGINX Ingress Controller
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.10.0/deploy/static/provider/cloud/deploy.yaml
+
+### проверить наличие ингресса
+kubectl get pods -n ingress-nginx
+
+## применить ингресс
+kubectl apply -f src/kubernetes/ingress.yaml
+###>ingress.networking.k8s.io/cinemaabyss-ingress configured
+## проверить что все ок
+kubectl -n cinemaabyss get ingress cinemaabyss-ingress
+###>NAME                  CLASS   HOSTS                     ADDRESS     PORTS   AGE
+###>cinemaabyss-ingress   nginx   cinemaabyss.example.com   localhost   80      20m
+
+
+## Удаляем все
+```bash
+kubectl delete all --all -n cinemaabyss
+kubectl delete namespace cinemaabyss
+```
 ```
 
 kubectl apply -f src/kubernetes/monolith.yaml
@@ -52,5 +77,5 @@ kubectl apply -f src/kubernetes/movies-service.yaml
 kubectl apply -f src/kubernetes/events-service.yaml
 kubectl apply -f src/kubernetes/proxy-service.yaml
 
-список пакетов в чстном репозитории гитхаба
+список пакетов в частном репозитории гитхаба
 https://github.com/mrtxee?tab=packages
