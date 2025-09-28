@@ -38,17 +38,20 @@ services:
     depends_on:
       - zookeeper
     ports:
-      - "9092:9092"
+      - "9092:9092"   # Внутренний порт (для контейнеров)
+      - "9093:9093"   # Внешний порт (для хоста/локальной сети)
     environment:
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      # Слушатели: как Kafka слушает на портах
+      KAFKA_LISTENERS: INTERNAL://0.0.0.0:9092,EXTERNAL://0.0.0.0:9093
+      # Рекламируемые адреса: какие адреса Kafka сообщает клиентам
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:9092,EXTERNAL://localhost:9093
+      # Сопоставление имен слушателей с протоколами (обязательно!)
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      # Укажите, какой слушатель использовать для связи между брокерами (важно!)
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_CREATE_TOPICS: "movie-events:1:1,user-events:1:1,payment-events:1:1"
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      - cinemaabyss-network
 
   # Monolith Service
   monolith:
@@ -96,6 +99,9 @@ services:
     environment:
       PORT: 8082
       KAFKA_BROKERS: kafka:9092
+      DATASOURCE_URL: jdbc:postgresql://postgres:5432/cinemaabyss?sslmode=disable
+      DATASOURCE_USERNAME: postgres
+      DATASOURCE_PASSWORD: postgres_password
     networks:
       - cinemaabyss-network
 
@@ -108,7 +114,7 @@ services:
     depends_on:
       - monolith
       - movies-service
-      - events-service
+#      - events-service
     ports:
       - "8000:8000"
     environment:
@@ -117,7 +123,7 @@ services:
       MOVIES_SERVICE_URL: http://movies-service:8081
       EVENTS_SERVICE_URL: http://events-service:8082
       GRADUAL_MIGRATION: "true"
-      MOVIES_MIGRATION_PERCENT: "50"
+      MOVIES_MIGRATION_PERCENT: "100"
     networks:
       - cinemaabyss-network
 

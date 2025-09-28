@@ -1,0 +1,27 @@
+@startuml
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+SHOW_PERSON_OUTLINE()
+
+LAYOUT_WITH_LEGEND()
+
+title Контекст системы «Кинобездна»
+
+Person(client_tv, "User", "TV client")
+Person(client_pc, "User", "Web app")
+Person(client_mobile, "User", "Mobile app")
+
+System(system, "Кинобездна", "Принимает платежи, находит фильмы, отдает контент клиентам")
+
+System_Ext(recomendator, "CinemaRecomendator", "система рекомендации контента")
+System_Ext(paygate, "PaymentGate", "система процессинга платежей")
+
+Rel(client_tv, system, "использует")
+Rel(client_pc, system, "использует")
+Rel(client_mobile, system, "использует")
+
+Rel_Neighbor(system, paygate, "платежи")
+Rel_Neighbor(recomendator, system, "рекомендации")
+
+@enduml

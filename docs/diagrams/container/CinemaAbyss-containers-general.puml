@@ -1,0 +1,53 @@
+@startuml
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+SHOW_PERSON_OUTLINE()
+LAYOUT_WITH_LEGEND()
+title "Диаграмма контейнеров системы «Кинобездна»"
+
+Person(client_tv, "User", "TV client")
+Person(client_pc, "User", "Web app")
+Person(client_mobile, "User", "Mobile app")
+
+
+System_Boundary(system, "Кинобездна") {
+
+  Container(bff_tv, "BFF TV Adapter", "TV client request adapter")
+
+  Container(api_gateaway, "API Gateway", "Java, Spring Cloud Gateway", "Client request entry point")
+
+	Container(user_ct, "User profile", "Java, Spring MVC", "Личный кабинет пользователя")
+	Container(billing_ct, "Billing & Payment", "Java, Spring MVC", "Биллинг и процессинг платежей")
+	Container(content_ct, "Cinema Navigator", "Java, Spring MVC", "Регистрация, мониторинг и управление устройствами")
+
+  ContainerDb(user_db, "User DB", "PostgresSQL", "Хранение пользователей, доступов, билинга")
+  ContainerDb(content_db, "Content DB", "PostgresSQL", "База навигации по контенту")
+  ContainerDb(movies_s3, "Movies DB", "Yandex Object Storage S3", "База фильмов «Кинобездна»")
+
+  Rel(api_gateaway, user_ct, "rest")
+  Rel(api_gateaway, billing_ct, "rest")
+  Rel(api_gateaway, content_ct, "rest")
+
+  Rel(user_ct, user_db, "socket")
+  Rel(billing_ct, user_db, "socket")
+  Rel(content_ct, content_db, "socket")
+  Rel(content_ct, movies_s3, "socket")
+
+}
+
+System_Ext(recomendator, "CinemaRecomendator", "Система рекомендации контента")
+System_Ext(paygate, "PaymentGate", "Платежный шлюз")
+System_Ext(streams, "External Movie Sources", "Внешние источники фильмов")
+
+Rel(client_tv, bff_tv, "rest")
+Rel_Neighbor(bff_tv, api_gateaway, "rest")
+Rel(client_pc, api_gateaway, "rest")
+Rel(client_mobile, api_gateaway, "rest")
+
+Rel_Neighbor(streams, content_ct, "rest")
+Rel_Neighbor(recomendator, content_ct, "amqp")
+Rel_Neighbor(paygate, billing_ct, "rest")
+
+
+@enduml

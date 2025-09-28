@@ -5,7 +5,7 @@
 1. Спроектируйте to be архитектуру КиноБездны, разделив всю систему на отдельные домены и организовав интеграционное взаимодействие и единую точку вызова сервисов.
 Результат представьте в виде контейнерной диаграммы в нотации С4.
 Добавьте ссылку на файл в этот шаблон
-[ссылка на файл](ссылка)
+   * [Импакт анализ проекта «Кинобездна»](docs/ApplicationChangeImpactAnalysis.md)
 
 # Задание 2
 
@@ -58,6 +58,174 @@
 
 Необходимые тесты для проверки этого API вызываются при запуске npm run test:local из папки tests/postman 
 Приложите скриншот тестов и скриншот состояния топиков Kafka из UI http://localhost:8090 
+
+### Результат
+
+Скрин выполнения `npm run test:local`
+
+
+![Скрин тестов](attachments/20250917153121.png)
+
+
+Полный листинг `npm run test:local`
+
+```batch
+C:\h\a\f\software-architect-cource\labs\sprint-2\architecture-cinemaabyss\tests\postman>npm run test:local
+
+> cinemaabyss-api-tests@1.0.0 test:local C:\h\a\f\software-architect-cource\labs\sprint-2\architecture-cinemaabyss\tests\postman
+> node run-tests.js --environment local
+
+Running tests against local environment...
+newman: could not find "htmlextra" reporter
+  ensure that the reporter is installed in the same directory as newman
+  please install reporter using npm
+
+newman
+
+CinemaAbyss API Tests
+
+□ Monolith Service
+└ Health Check
+  GET http://127.0.0.1:8080/health [200 OK, 124B, 38ms]
+  √  Status code is 200
+
+└ Get All Users
+  GET http://127.0.0.1:8080/api/users [200 OK, 825B, 11ms]
+  √  Status code is 200
+  √  Response is an array
+
+└ Create User
+  POST http://127.0.0.1:8080/api/users [201 Created, 182B, 14ms]
+  √  Status code is 201
+  √  Response has id
+
+└ Get User by ID
+  GET http://127.0.0.1:8080/api/users?id=13 [200 OK, 177B, 9ms]
+  √  Status code is 200
+  √  User ID matches
+
+└ Get All Movies
+  GET http://127.0.0.1:8080/api/movies [200 OK, 3.92kB, 16ms]
+  √  Status code is 200
+  √  Response is an array
+
+└ Create Movie
+  POST http://127.0.0.1:8080/api/movies [201 Created, 246B, 14ms]
+  √  Status code is 201
+  √  Response has id
+
+└ Get Movie by ID
+  GET http://127.0.0.1:8080/api/movies?id=23 [200 OK, 241B, 9ms]
+  √  Status code is 200
+  √  Movie ID matches
+
+└ Create Payment
+  POST http://127.0.0.1:8080/api/payments [201 Created, 195B, 10ms]
+  √  Status code is 201
+  √  Response has id
+
+└ Get Payment by ID
+  GET http://127.0.0.1:8080/api/payments?id=12 [200 OK, 187B, 9ms]
+  √  Status code is 200
+  √  Payment ID matches
+
+└ Create Subscription
+  POST http://127.0.0.1:8080/api/subscriptions [201 Created, 237B, 10ms]
+  √  Status code is 201
+  √  Response has id
+
+└ Get Subscription by ID
+  GET http://127.0.0.1:8080/api/subscriptions?id=12 [200 OK, 232B, 8ms]
+  √  Status code is 200
+  √  Subscription ID matches
+
+□ Movies Microservice
+└ Health Check
+  GET http://127.0.0.1:8081/api/movies/health [200 OK, 124B, 9ms]
+  √  Status code is 200
+  √  Status is true
+
+└ Get All Movies
+  GET http://127.0.0.1:8081/api/movies [200 OK, 4.05kB, 16ms]
+  √  Status code is 200
+  √  Response is an array
+
+└ Create Movie
+  POST http://127.0.0.1:8081/api/movies [201 Created, 283B, 13ms]
+  √  Status code is 201
+  √  Response has id
+
+└ Get Movie by ID
+  GET http://127.0.0.1:8081/api/movies?id=24 [200 OK, 278B, 9ms]
+  √  Status code is 200
+  √  Movie ID matches
+
+□ Events Microservice
+└ Health Check
+  GET http://127.0.0.1:8082/api/events/health [200 OK, 179B, 15ms]
+  √  Status code is 200
+  √  Status is true
+
+└ Create Movie Event
+  POST http://127.0.0.1:8082/api/events/movie [201 Created, 263B, 11ms]
+  √  Status code is 201
+  √  Response has status success
+
+└ Create User Event
+  POST http://127.0.0.1:8082/api/events/user [201 Created, 288B, 12ms]
+  √  Status code is 201
+  √  Response has status success
+
+└ Create Payment Event
+  POST http://127.0.0.1:8082/api/events/payment [201 Created, 308B, 10ms]
+  √  Status code is 201
+  √  Response has status success
+
+□ Proxy Service
+└ Health Check
+  GET http://127.0.0.1:8000/health [200 OK, 132B, 16ms]
+  √  Status code is 200
+
+└ Get All Movies via Proxy
+  GET http://127.0.0.1:8000/api/movies [200 OK, 4.22kB, 24ms]
+  √  Status code is 200
+  √  Response is an array
+
+└ Get All Users via Proxy
+  GET http://127.0.0.1:8000/api/users [200 OK, 901B, 16ms]
+  √  Status code is 200
+  √  Response is an array
+
+┌─────────────────────────┬──────────────────┬─────────────────┐
+│                         │         executed │          failed │
+├─────────────────────────┼──────────────────┼─────────────────┤
+│              iterations │                1 │               0 │
+├─────────────────────────┼──────────────────┼─────────────────┤
+│                requests │               22 │               0 │
+├─────────────────────────┼──────────────────┼─────────────────┤
+│            test-scripts │               22 │               0 │
+├─────────────────────────┼──────────────────┼─────────────────┤
+│      prerequest-scripts │                0 │               0 │
+├─────────────────────────┼──────────────────┼─────────────────┤
+│              assertions │               42 │               0 │
+├─────────────────────────┴──────────────────┴─────────────────┤
+│ total run duration: 5s                                       │
+├──────────────────────────────────────────────────────────────┤
+│ total data received: 14.9kB (approx)                         │
+├──────────────────────────────────────────────────────────────┤
+│ average response time: 13ms [min: 8ms, max: 38ms, s.d.: 6ms] │
+└──────────────────────────────────────────────────────────────┘
+Newman run completed!
+Total requests: 22
+Failed requests: 0
+Total assertions: 42
+Failed assertions: 0
+```
+
+Скрины состояния кафки
+
+![Скрин кафки-1](attachments/20250917202635.png)
+![Скрин кафки-2](attachments/img.png)
 
 # Задание 3
 
@@ -132,7 +300,7 @@ jobs:
 {
         "auths": {
                 "ghcr.io": {
-                       тут пусто
+                       "тут" : "пусто"
                 }
         }
 }
@@ -272,9 +440,13 @@ cat .docker/config.json | base64
   Часть тестов с health-чек упадет, но создание событий отработает.
   Откройте логи event-service и сделайте скриншот обработки событий
 
-#### Шаг 3
-Добавьте сюда скриншота вывода при вызове https://cinemaabyss.example.com/api/movies и  скриншот вывода event-service после вызова тестов.
+**скрины:**
+  ![postman k8s тесты](attachments/img_3.png)
 
+#### Шаг 3
+Добавьте сюда скриншота вывода при вызове https://cinemaabyss.example.com/api/movies и скриншот вывода event-service после вызова тестов.
+![cinemaabyss.example.com/api/movies](attachments/img_2.png)
+![логи event-service](attachments/img_1.png)
 
 # Задание 4
 Для простоты дальнейшего обновления и развертывания вам как архитектуру необходимо так же реализовать helm-чарты для прокси-сервиса и проверить работу 
@@ -349,6 +521,8 @@ minikube tunnel
 Потом вызовите 
 https://cinemaabyss.example.com/api/movies
 и приложите скриншот развертывания helm и вывода https://cinemaabyss.example.com/api/movies
+
+![helm cinemaabyss.example.com/api/movies](attachments/img_2.png)
 
 ## Удаляем все
 
