@@ -1,5 +1,8 @@
 package cinemaabyss.events.cinema_abyss_events.configuration;
 
+
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -24,6 +27,11 @@ public class KafkaProducerConfig {
     configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaBootstrapServer);
     configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
     configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+    java.util.Date utilDate = new java.util.Date();
+    java.sql.Date sqlDate = new java.sql.Date(123123123);
+    java.time.Instant instant = java.time.Instant.now();
+    java.time.LocalDateTime localDateTime = java.time.LocalDateTime.now();
+
     return new DefaultKafkaProducerFactory<>(configProps);
   }
 
